@@ -1,0 +1,104 @@
+<locations>
+	<location id="1" name="one" type="2" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69243237" longitude="13.38507593" />
+			<point latitude="47.69243237" longitude="13.38573986" />
+			<point latitude="47.69216517" longitude="13.38599735" />
+			<point latitude="47.69189796" longitude="13.38573986" />
+			<point latitude="47.69189796" longitude="13.38507593" />
+			<point latitude="47.69216517" longitude="13.38481844" />
+			<point latitude="47.69243237" longitude="13.38507593" />
+		</boundaries>
+	</location>
+	<location id="2" name="two" type="2" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69296678" longitude="13.38503838" />
+			<point latitude="47.69296678" longitude="13.38573039" />
+			<point latitude="47.69269958" longitude="13.38599735" />
+			<point latitude="47.69243237" longitude="13.38573986" />
+			<point latitude="47.69243237" longitude="13.38507593" />
+			<point latitude="47.69269958" longitude="13.38481844" />
+			<point latitude="47.69296678" longitude="13.38503838" />
+		</boundaries>
+	</location>
+	<location id="3" name="three" type="2" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69323399" longitude="13.38599735" />
+			<point latitude="47.69323399" longitude="13.38666128" />
+			<point latitude="47.69296678" longitude="13.38692824" />
+			<point latitude="47.69269958" longitude="13.38666128" />
+			<point latitude="47.69269958" longitude="13.38599735" />
+			<point latitude="47.69296678" longitude="13.38573039" />
+			<point latitude="47.69323399" longitude="13.38599735" />
+		</boundaries>
+	</location>
+	<location id="4" name="four" type="2" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69269958" longitude="13.38599735" />
+			<point latitude="47.69269958" longitude="13.38666128" />
+			<point latitude="47.69243237" longitude="13.38692824" />
+			<point latitude="47.69216517" longitude="13.38666128" />
+			<point latitude="47.69216517" longitude="13.38599735" />
+			<point latitude="47.69243237" longitude="13.38573986" />
+			<point latitude="47.69269958" longitude="13.38599735" />
+		</boundaries>
+	</location>
+	<location id="5" name="five" type="1" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69216517" longitude="13.38599735" />
+			<point latitude="47.69216517" longitude="13.38666128" />
+			<point latitude="47.69189796" longitude="13.38692824" />
+			<point latitude="47.69163076" longitude="13.38666128" />
+			<point latitude="47.69163076" longitude="13.38599735" />
+			<point latitude="47.69189796" longitude="13.38573986" />
+			<point latitude="47.69216517" longitude="13.38599735" />
+		</boundaries>
+	</location>
+	<location id="6" name="six" type="3" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69296678" longitude="13.38692824" />
+			<point latitude="47.69296678" longitude="13.38758270" />
+			<point latitude="47.69269958" longitude="13.38784019" />
+			<point latitude="47.69243237" longitude="13.38758270" />
+			<point latitude="47.69243237" longitude="13.38692824" />
+			<point latitude="47.69269958" longitude="13.38666128" />
+			<point latitude="47.69296678" longitude="13.38692824" />
+		</boundaries>
+	</location>
+	<location id="7" name="seven" type="3" avgSpeed="0" mutRate="0"
+		timeStamp="1367162195" maxAltitude="1000" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69243237" longitude="13.38692824" />
+			<point latitude="47.69243237" longitude="13.38758270" />
+			<point latitude="47.69216517" longitude="13.38784019" />
+			<point latitude="47.69189796" longitude="13.38758270" />
+			<point latitude="47.69189796" longitude="13.38692824" />
+			<point latitude="47.69216517" longitude="13.38666128" />
+			<point latitude="47.69243237" longitude="13.38692824" />
+		</boundaries>
+	</location>
+	<location id="8" name="oil" type="4" avgSpeed="0" mutRate="0.5"
+		timeStamp="1367162195" maxAltitude="0" minAltitude="0">
+		<boundaries>
+			<point latitude="47.69243237" longitude="13.38692824" />
+			<point latitude="47.69243237" longitude="13.38710547" />
+			<point latitude="47.69243237" longitude="13.38728270" />
+			<point latitude="47.69234877" longitude="13.38728270" />
+			<point latitude="47.69226517" longitude="13.38728270" />
+			<point latitude="47.69226517" longitude="13.38710547" />
+			<point latitude="47.69226517" longitude="13.38692824" />
+			<point latitude="47.69234877" longitude="13.38692824" />
+			<point latitude="47.69243237" longitude="13.38692824" />
+		</boundaries>
+		<limits>
+			<latitude min="47.69163076" max="47.69323399" />
+			<longitude min="13.38481844" max="13.38784019" />
+		</limits>
+	</location>
+</locations>

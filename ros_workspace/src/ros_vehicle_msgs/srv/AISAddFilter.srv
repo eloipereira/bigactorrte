@@ -1,0 +1,4 @@
+uint64 vehicleId
+uint32 mmsi
+---
+ServiceReturnBool result

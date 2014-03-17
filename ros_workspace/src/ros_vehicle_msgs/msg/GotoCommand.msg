@@ -1,0 +1,2 @@
+uint64 vehicleId
+Waypoint waypoint

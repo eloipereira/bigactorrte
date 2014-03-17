@@ -1,0 +1,4 @@
+big_actor_msgs/Task task
+bool update
+---
+ServiceReturnBool result

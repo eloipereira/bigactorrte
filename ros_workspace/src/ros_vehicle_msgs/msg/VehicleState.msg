@@ -1,0 +1,9 @@
+Header                      header
+uint64                      vehicleId
+uint8                       vehicleType
+uint8                       vehicleNetwork
+big_actor_msgs/LatLngAlt    position
+float32                     heading
+float32                     vx
+float32                     vy
+float32                     vz

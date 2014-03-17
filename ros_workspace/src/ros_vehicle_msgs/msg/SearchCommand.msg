@@ -1,0 +1,2 @@
+uint64 vehicleId
+big_actor_msgs/Location area

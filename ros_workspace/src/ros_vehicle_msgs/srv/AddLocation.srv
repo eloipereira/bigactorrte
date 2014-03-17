@@ -1,0 +1,3 @@
+big_actor_msgs/Location location
+---
+ServiceReturnBool result

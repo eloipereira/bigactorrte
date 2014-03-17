@@ -1,0 +1,9 @@
+Header                      header
+uint16                      waypointId
+uint16                      nextWp
+uint16                      previousWp
+bool                        start
+bool                        stop
+bool                        home
+big_actor_msgs/LatLngAlt    position
+LoiterData                  loiter

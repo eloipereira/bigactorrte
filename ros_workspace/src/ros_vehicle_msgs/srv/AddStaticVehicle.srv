@@ -1,0 +1,4 @@
+big_actor_msgs/Vehicle vehicle
+bool update
+---
+ServiceReturnBool result

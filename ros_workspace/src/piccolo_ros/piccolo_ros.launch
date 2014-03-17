@@ -1,0 +1,7 @@
+<launch>
+    <node name="piccolo_driver" pkg="piccolo_ros" type="piccolo_driver"  output="screen">
+        <param name="host" type="str" value="localhost" />
+        <param name="port" type="int" value="2001" />
+    </node>
+
+</launch>

@@ -1,0 +1,14 @@
+Header header
+uint16 vehicleid
+uint8 orbitRadius
+uint8 trackerStatus
+uint16 timeToWp
+uint8 wpFrom
+uint8 wpTo
+bool airBoundaryViolated
+bool autopilotEngineKill
+bool commsTimeout
+bool fligthTimerElapsed
+bool fligthTermination
+bool gpsTimeout
+bool orbiting

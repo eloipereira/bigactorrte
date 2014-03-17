@@ -1,0 +1,4 @@
+uint16 vehicleId
+---
+Waypoint[] waypoints
+ServiceReturnBool result

@@ -1,0 +1,32 @@
+<launch>
+    <param name="vehicle_id" type="int" value="1" />
+    <param name="vehicle_name" type="str" value="uav1" />
+    <param name="vehicle_type" type="int" value="4" />
+	
+	<node name="piccolo_driver_1" pkg="piccolo_ros" type="piccolo_driver"
+		output="screen">
+		<param name="host" type="str" value="172.21.2.39" />
+		<param name="port" type="str" value="2011" />
+	</node>
+	
+	<node name="autopilot_interface_node_1" pkg="ros_vehicle"
+        type="autopilot_interface_node" output="screen">
+        <!-- refresh wp interval in seconds -->
+        <param name="refresh_wps_interval" type="int" value="5" />
+    </node>
+	
+	<node name="mse_processor_node_1" pkg="ros_vehicle" type="mse_processor_node"  output="screen" />
+		
+	<node name="task_manager_node_1" pkg="ros_vehicle" type="task_manager_node"	 output="screen" />
+		
+	<node name="mse_gateway_node_1" pkg="ros_vehicle" type="mse_gateway_node"  output="screen">
+		<param name="port" type="int" value="3555" />
+		
+		<param name="num_masters" type="int" value="1" />
+		<param name="master_host_1" type="str" value="172.21.100.150" />
+		<param name="master_port_1" type="int" value="3555" />
+		
+	</node>
+	
+	<node name="ais_manager_node_1" pkg="ros_vehicle" type="ais_manager_node" output="screen" />
+</launch>

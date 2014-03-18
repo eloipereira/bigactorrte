@@ -3,7 +3,7 @@
 This repository provides the necessary ROS packages to run BigActors over 
 the Robot Operating System. 
 
-Features: 
+## Features: 
 
 * Scala BigActor Langauge 
 
@@ -11,11 +11,11 @@ Features:
 
 * web-based visualization of the mission
 
-Dependencies:
+## Dependencies:
 
 * ROS Hydro
 
-Instalation:
+## Instalation:
 
 * Clone the repository
 
@@ -26,3 +26,19 @@ Instalation:
 * cd ..
 
 * catkin_make
+
+* source devel/setup.bash
+
+## Run in simulation environment:
+
+* Start a Software in the Loop Simulation at the Piccolo framework (this can be done in a different machine)
+
+* rosed ros_vehicle SIL.launch
+
+* Update the following fields with the IP and port of your piccolo simulation
+
+<param name="host" type="str" value="IP_PICCOLO_SIMULATION" />
+
+<param name="port" type="str" value="PORT_PICCOLO_SIMULATION (default 2001)" />
+
+* roslaunch ros_vehicle SIL.launch

@@ -37,8 +37,8 @@ the Robot Operating System.
 
 * Update the following fields with the IP and port of your piccolo simulation
 
-..* <param name="host" type="str" value="IP_PICCOLO_SIMULATION" />
+  * <param name="host" type="str" value="IP_PICCOLO_SIMULATION" />
 
-..* <param name="port" type="str" value="PORT_PICCOLO_SIMULATION (default 2001)" />
+  * <param name="port" type="str" value="PORT_PICCOLO_SIMULATION (default 2001)" />
 
 * roslaunch ros_vehicle SIL.launch

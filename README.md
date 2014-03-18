@@ -15,6 +15,10 @@ the Robot Operating System.
 
 * ROS Hydro
 
+* Piccolo Command Center and SIL
+
+* OpenJDK 7
+
 ## Instalation:
 
 * Clone the repository

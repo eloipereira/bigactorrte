@@ -18,6 +18,8 @@
 apply plugin: 'application'
 mainClassName = 'org.ros.RosRun'
 
+apply plugin: 'scala'
+
 /* 
  Dependencies can be on external maven artifacts (such as rosjava_core
  here) or on sibling subprojects. Fpr external maven artifact dependencies
@@ -29,11 +31,20 @@ mainClassName = 'org.ros.RosRun'
 dependencies {
   /* An external maven artifact dependency */
   compile 'org.ros.rosjava_core:rosjava:[0.1,)'
+  
+  compile 'org.scala-lang:scala-actors:2.10.3'
   /* Example of a local subproject dependency */ 
   /* compile project(':sibling_gradle_project') */
 
   compile project(':big_actor_msgs')
-  compile files('./libs/antlr-3.4-complete.jar','./libs/Bgm2Java.jar','./libs/BigraphVisualizer.jar','./libs/jts-1.13.jar')
+  compile files('./libs/antlr-3.4-complete.jar','./libs/Bgm2Java.jar','./libs/BigraphVisualizer.jar','./libs/jts-1.13.jar','./libs/bigactors_2.10-1.0.jar')
+  
+  // Libraries needed to run the scala tools
+  scalaTools 'org.scala-lang:scala-compiler:2.10.0'
+  scalaTools 'org.scala-lang:scala-library:2.10.0'
+
+  // Libraries needed for scala api
+  compile 'org.scala-lang:scala-library:2.10.0'
 
 }
 

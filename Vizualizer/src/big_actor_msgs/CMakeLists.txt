@@ -31,6 +31,7 @@ add_message_files(
 	StructureStateEstimate.msg
 	Task.msg
 	Vehicle.msg
+	Hosting.msg
 )
 
 ## Generate services in the 'srv' folder

@@ -4,3 +4,4 @@ Vehicle[] vehicles            # Known vehicles
 Connectivity[] connections    # Established connections between vehicles
 Location[] locations          # Known locations
 Network[] networks            # Known networks
+Hosting[] hostings	      # Hosting relation 

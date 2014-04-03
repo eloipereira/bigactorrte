@@ -201,6 +201,12 @@ MSEProcessor::publishSSE()
     sse.locations.push_back(it->second);
   }
 
+  for (HostingsMap_t::iterator it = this->hostings_.begin();
+      it != this->hostings_.end(); ++it)
+  {
+    sse.hostings.push_back(it->second);
+  }
+
   this->sse_publisher_.publish(sse);
   this->internal_sse_publisher_.publish(sse);
 }
@@ -304,6 +310,24 @@ MSEProcessor::updateLocations(
 }
 
 void
+MSEProcessor::updateHostings(
+    const big_actor_msgs::StructureStateEstimate::ConstPtr& msg)
+{
+  HostingsVector_t v = msg->hostings;
+  for (HostingsVector_t::iterator it = v.begin(); it != v.end(); ++it)
+  {
+    //ROS_INFO(" %lu < %lu ",this->hostings_[it->bigActorID].timeStamp ,it->timeStamp);
+    if (this->hostings_.find(it->bigActorID) == this->hostings_.end()
+        || this->hostings_[it->bigActorID].timeStamp < it->timeStamp)
+    {
+      this->hostings_[it->bigActorID] = *it;
+      //ROS_INFO("Updated Hosting Relation: ");
+    }
+  }
+}
+
+
+void
 MSEProcessor::updateConnectivity(
     const big_actor_msgs::StructureStateEstimate::ConstPtr& msg)
 {
@@ -353,6 +377,7 @@ MSEProcessor::sseCallback(
     updateVehicles(msg);
     updateLocations(msg);
     updateConnectivity(msg); //! TODO:Review connectivity info
+    updateHostings(msg);
   }
 }
 

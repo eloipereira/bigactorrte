@@ -131,6 +131,7 @@ private:
   ConnectivityMap_t connectivity_;
   TimestampsMap_t vehicles_stamps_;
   std::vector<int> networks_;
+  HostingsMap_t hostings_;
 
   //! Private helper methods
   bool
@@ -144,6 +145,10 @@ private:
   void
   updateConnectivity(
       const big_actor_msgs::StructureStateEstimate::ConstPtr& msg);
+
+  void
+  updateHostings(const big_actor_msgs::StructureStateEstimate::ConstPtr& msg);
+
   void
   publishMSE();
   void

@@ -26,14 +26,14 @@ typedef std::map<uint64_t, big_actor_msgs::Vehicle> VehiclesMap_t;
 typedef std::map<uint32_t, big_actor_msgs::Task> TasksMap_t;
 typedef std::map<uint32_t, big_actor_msgs::Location> LocationsMap_t;
 typedef std::map<uint64_t, std::list<big_actor_msgs::Connectivity> > ConnectivityMap_t;
+typedef std::map<std::string, big_actor_msgs::Hosting> HostingsMap_t;
 
 //! redefinition of MSE message Vector Types
 typedef std::vector<big_actor_msgs::Vehicle> VehiclesVector_t;
 typedef std::vector<big_actor_msgs::Task> TasksVector_t;
 typedef std::vector<big_actor_msgs::Location> LocationsVector_t;
 typedef std::vector<big_actor_msgs::Connectivity> ConnectivityVector_t;
-
-
+typedef std::vector<big_actor_msgs::Hosting> HostingsVector_t;
 
 
 #endif /* DEFINITIONS_H_ */

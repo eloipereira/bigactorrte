@@ -410,6 +410,7 @@ void
 MSEProcessor::mseCallback(
     const big_actor_msgs::MissionStateEstimate::ConstPtr& msg)
 {
+  ROS_INFO("Got new MSE from %d...", (int )msg->srcVehicleId);
   if (msg->srcVehicleId == this->vehicle_id_)
   {
 
@@ -425,6 +426,7 @@ MSEProcessor::mseCallback(
   }
   if (isFresh(msg->srcVehicleId, msg->timeStamp))
   {
+    ROS_INFO("...and it is fresh. Let me update tasks!");
     //! update the stamp and process MSE
     this->vehicles_stamps_[msg->srcVehicleId] = msg->timeStamp;
     updateTasks(msg);

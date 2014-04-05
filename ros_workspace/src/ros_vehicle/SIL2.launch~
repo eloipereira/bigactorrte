@@ -1,16 +1,16 @@
 <launch>
 	<!-- Vehicle Parameters -->
-	<param name="vehicle_id" type="int" value="1" />
-	<param name="vehicle_name" type="str" value="uav1" />
+	<param name="vehicle_id" type="int" value="2" />
+	<param name="vehicle_name" type="str" value="uav2" />
 	<param name="vehicle_type" type="int" value="4" />
-	<param name="net_num" type="int" value="1"/>
+    	<param name="net_num" type="int" value="1"/>
         <param name="net_1" type="int" value="50"/>
     
 	<!-- Ground Station Parameters -->
-	<param name="gs_id" type="int" value="11" />
-	<param name="gs_channel" type="int" value="1" />
-	<param name="gs_lat" type="double" value="38.835675" />
-	<param name="gs_long" type="double" value="-9.377597" />
+	<param name="gs_id" type="int" value="2" />
+	<param name="gs_channel" type="int" value="2" />
+	<param name="gs_lat" type="double" value="38.8357" />
+	<param name="gs_long" type="double" value="-9.378" />
 	<param name="gs_alt" type="double" value="85" />
 	<param name="gs_nettype" type="int" value="40" />
 
@@ -18,7 +18,7 @@
 	<node name="piccolo_driver_1" pkg="piccolo_ros" type="piccolo_driver"
 		output="screen">
 		<param name="host" type="str" value="62.28.239.26" />
-		<param name="port" type="str" value="2001" />
+		<param name="port" type="str" value="2011" />
 	</node>
 	<node name="autopilot_interface_node_1" pkg="ros_vehicle"
 		type="autopilot_interface_node" output="screen">
@@ -38,10 +38,10 @@
 		args="1" output="screen" />
 	<node name="mse_gateway_node_1" pkg="ros_vehicle" type="mse_gateway_node"
 		args="1" output="screen">
-		<param name="port" type="int" value="3555" />
+		<param name="port" type="int" value="4555" />
 		<param name="num_masters" type="int" value="1" />
 		<param name="master_host_1" type="str" value="127.0.0.1" />
-		<param name="master_port_1" type="int" value="4555" />
+		<param name="master_port_1" type="int" value="3555" />
 	</node>
 	<node name="ais_manager_node_1" pkg="ros_vehicle" type="ais_manager_node"
 		output="screen">

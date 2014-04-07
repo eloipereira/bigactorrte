@@ -31,7 +31,7 @@ public class BigraphHandle extends AbstractNodeMain {
     private List<String> names = new ArrayList<String>();
     private edu.berkeley.eloi.bigraph.Bigraph bigraph = new edu.berkeley.eloi.bigraph.Bigraph();
     private int taskCounter = 0;
-
+    private int srcVehicleId = 0;
     
     public int getTaskCounter(){
         return taskCounter;
@@ -59,15 +59,18 @@ public class BigraphHandle extends AbstractNodeMain {
 
         // Publishers
         final Publisher<MissionStateEstimate> publisher0 =
-                connectedNode.newPublisher("mse", MissionStateEstimate._TYPE);
+                connectedNode.newPublisher("mse_external", MissionStateEstimate._TYPE);
 
         final Publisher<big_actor_msgs.Bigraph> publisher1 =
                 connectedNode.newPublisher("bigraph", big_actor_msgs.Bigraph._TYPE);
 
         final Publisher<std_msgs.String> publisher2 =
                 connectedNode.newPublisher("bgm", std_msgs.String._TYPE);
+	
+	final Publisher<StructureStateEstimate> publisher3 =
+                connectedNode.newPublisher("sse_external", StructureStateEstimate._TYPE);
 
-
+ 
         //Subscribers
         Subscriber<StructureStateEstimate> subscriber0 = connectedNode.newSubscriber("sse", StructureStateEstimate._TYPE);
         subscriber0.addMessageListener(new MessageListener<StructureStateEstimate>() {
@@ -134,19 +137,19 @@ public class BigraphHandle extends AbstractNodeMain {
 		     edu.berkeley.eloi.bigraph.Bigraph redex = rule.getRedex();
 		     edu.berkeley.eloi.bigraph.Bigraph reactum = rule.getReactum();
 
-		     List<Node> vehicles = redex.getNodesWithControlID("Vehicle");
+		     List<BigraphNode> vehicles = redex.getNodesWithControlID("Vehicle");
 		     
 		     if(vehicles.size() == 0) log.info("No vehicles to move");
 		     else if (vehicles.size() > 1) log.info("Rule attempt to move more than one vehicle.");
 		     else {
-			 Node vehicleNode = vehicles.get(0);
+			 BigraphNode vehicleNode = vehicles.get(0);
 		         Vehicle vehicle = getVehicleWithName(sse,vehicleNode.getId());
 			 if(vehicle == null) log.info("Vehicle does not exist or is not declared in the current structure estimation");
 		         else if(reactum.getNode(vehicleNode.getId()) == null) log.info("Vehicle not included in the reactum.");
 			 else {
-			     if(!reactum.getNode(vehicleNode.getId()).getParent().getClass().equals(Node.class)) log.info("Destination is not a node.");
+			     if(!reactum.getNode(vehicleNode.getId()).getParent().getClass().equals(BigraphNode.class)) log.info("Destination is not a node.");
 			     else {
-				 Node prnt = (Node) reactum.getNode(vehicleNode.getId()).getParent();
+				 BigraphNode prnt = (BigraphNode) reactum.getNode(vehicleNode.getId()).getParent();
 				 if(prnt.getCtrId().equals("Location")) {
 				     Location location = getLocationWithName(sse,prnt.getId());
 				     if (location == null) log.info("Destination does not exist or is not declared in the current structure estimation");
@@ -173,17 +176,25 @@ public class BigraphHandle extends AbstractNodeMain {
 			 tasks.add(t);
 			     
 			 //set new MSE fields
-			 mse.setTimeStamp(System.currentTimeMillis());
-			 mse.setSrcVehicleId(0);
+			 mse.setSrcVehicleId(srcVehicleId);
 			 mse.setTasks(tasks);
+			 mse.setTimeStamp(System.currentTimeMillis());
 			 publisher0.publish(mse);
 		     }
 		}
 		else if(isHostingBRR(brr)){
 		    edu.berkeley.eloi.bigraph.Bigraph reactum = rule.getReactum();
-		    List<Node> bigactors = reactum.getNodesWithControlID("BA");
-		    List<Node> vehicles = reactum.getNodesWithControlID("Vehicle");
-		    log.info("Hosting bigActor "+bigactors.get(0)+" at vehicle "+vehicles.get(0));
+		    BigraphNode bigactor = (reactum.getNodesWithControlID("BA")).get(0);
+		    BigraphNode vehicle = reactum.getNodesWithControlID("Vehicle").get(0);
+		    log.info("Hosting bigActor "+bigactor+" at vehicle "+vehicle);
+		    Hosting h = connectedNode.getTopicMessageFactory().newFromType(Hosting._TYPE);
+		    h.setBigActorID(bigactor.getId());
+		    h.setVehicleName(vehicle.getId()); 
+		    List<Hosting> hostings = sse.getHostings();
+		    hostings.add(h);
+		    sse.setHostings(hostings);
+		    sse.setTimeStamp(System.currentTimeMillis());
+		    publisher3.publish(sse);
 		}
 		else log.info("Unknown BRR");
 	    }       
@@ -209,16 +220,24 @@ public class BigraphHandle extends AbstractNodeMain {
         });
     }
 
+    private static String vehicleRegex = "(\\w+)(_Vehicle)(\\[.*\\])?";
+    private static String locationRegex = "(\\w+)(_Location)(\\[.*\\])?";
+    private static String bigactorRegex = "(\\w+)(_BA)";
+    
+    
     public static Boolean isMoveVehicleBRR(String brr){
-	String movePattern0 = "(\\w_Vehicle)||(\\w_Location|\\w_Vehicle)->(\\w_Vehicle).(\\w_Location|\\w_Vehicle)";
-	String movePattern1 = "(\\w_Vehicle)|(\\w_Location|\\w_Vehicle)->(\\w_Vehicle).(\\w_Location|\\w_Vehicle)";
-	if (brr.matches(movePattern0) || brr.matches(movePattern1)) 
+	brr.replaceAll("\\s+","");
+	String movePattern0 = vehicleRegex + "(\\|\\||\\|)" + locationRegex + "(\\-\\>)" + locationRegex + "(\\.)" + locationRegex;
+	String movePattern1 = vehicleRegex + "(\\|\\||\\|)" + vehicleRegex + "(\\-\\>)" + vehicleRegex + "(\\.)" + vehicleRegex;
+	String movePattern2 = vehicleRegex + "(\\-\\>)" + vehicleRegex + "(\\.)" + vehicleRegex;
+	if (brr.matches(movePattern0) || brr.matches(movePattern1) || brr.matches(movePattern2)) 
 	    return true;
 	else return false;								      
     }
 
     public static Boolean isHostingBRR(String brr){
-	String hostingPattern0 = "(\\w_Vehicle)->(\\w_Vehicle).(\\w_BA)";
+	brr.replaceAll("\\s+","");
+	String hostingPattern0 = vehicleRegex + "(\\-\\>)" + vehicleRegex + "(\\.)" + bigactorRegex;
 	if (brr.matches(hostingPattern0)) 
 	    return true;
 	else return false;								      
@@ -233,7 +252,7 @@ public class BigraphHandle extends AbstractNodeMain {
         for (Location l : sse.getLocations()){
             Place prt = findLocationParent(l,sse,rg0);
             //System.out.println("Parent of " + l.getName() + ": "+ prt);
-            places.add(new Node(l.getName(),"Location",new ArrayList<String>(),prt));
+            places.add(new BigraphNode(l.getName(),"Location",new ArrayList<String>(),prt));
 
         }
         for (Vehicle v : sse.getVehicles()){
@@ -263,7 +282,7 @@ public class BigraphHandle extends AbstractNodeMain {
                 if (n.getType() == Network.NT_PICCOLO && ! names0.contains("piccolo"+n.getAddress())) names0.add("piccolo"+n.getAddress());
                 if (n.getType() == Network.NT_AIS && ! names0.contains("ais")) names0.add("ais");
             }
-            places.add(new Node(v.getName(),"Vehicle", names0, prt));
+            places.add(new BigraphNode(v.getName(),"Vehicle", names0, prt));
         }
 
         edu.berkeley.eloi.bigraph.Bigraph bg = new edu.berkeley.eloi.bigraph.Bigraph(places);
@@ -317,7 +336,7 @@ public class BigraphHandle extends AbstractNodeMain {
         if (container.equals(loc)){
             return region;
         } else {
-            return new Node(container.getName(),"Location",new ArrayList<java.lang.String>(),region);
+            return new BigraphNode(container.getName(),"Location",new ArrayList<java.lang.String>(),region);
         }
 
     }
@@ -340,7 +359,7 @@ public class BigraphHandle extends AbstractNodeMain {
                     .toArray(new Coordinate[points.size()])), gf), null);
 
             if(vehPoint.within(polygon)){
-                parent = new Node(l.getName(),"Location",new ArrayList<java.lang.String>(),region);
+                parent = new BigraphNode(l.getName(),"Location",new ArrayList<java.lang.String>(),region);
                 //System.out.println("Found parent of " + v + ": " + parent);
             }
         }
@@ -403,14 +422,11 @@ public class BigraphHandle extends AbstractNodeMain {
     }
 
     private Task createWPTask(Vehicle v, Double lat, Double lon, Double alt, Task t){
-        Long time = System.currentTimeMillis();
-        t.setTaskStamp(time);
         Long vId = v.getVehicleId();
         int taskId = 100*vId.intValue() + nextTaskId()%100;
         t.setTaskId(taskId);
         t.setTaskType(Task.TT_GOTO_WP);
         t.setStatus(Task.TS_ASSIGNED);
-        t.setCreationStamp(time);
         t.setVehicleId(v.getVehicleId());
         java.lang.String jsonParam = "{\n" +
                 "\t \"latitude\": " + lat + ",\n" +
@@ -419,6 +435,9 @@ public class BigraphHandle extends AbstractNodeMain {
                 "}";
 
         t.setParameters(jsonParam);
+	long time = System.currentTimeMillis();
+	t.setTaskStamp(time);
+	t.setCreationStamp(time);
         return t;
     }
 

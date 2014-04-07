@@ -37,6 +37,8 @@ buildscript {
     }
 }
 
+apply plugin: 'eclipse'
+
 apply plugin: 'catkin'
 project.catkin.tree.generate()
 

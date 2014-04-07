@@ -14,9 +14,7 @@ import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
-import std_msgs.String;
-//import foo_msgs.*;
-
+import java.lang.String;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,14 +26,13 @@ import java.util.List;
  * @author eloi@berkeley.edu (Eloi Pereira)
  */
 public class BigraphHandle extends AbstractNodeMain {
-
-    private java.lang.String term = "";
-    private List<java.lang.String> signature = new ArrayList<java.lang.String>();
-    private List<java.lang.String> names = new ArrayList<java.lang.String>();
+    private String term = "";
+    private List<String> signature = new ArrayList<String>();
+    private List<String> names = new ArrayList<String>();
     private edu.berkeley.eloi.bigraph.Bigraph bigraph = new edu.berkeley.eloi.bigraph.Bigraph();
     private int taskCounter = 0;
 
-
+    
     public int getTaskCounter(){
         return taskCounter;
     }
@@ -67,8 +64,8 @@ public class BigraphHandle extends AbstractNodeMain {
         final Publisher<big_actor_msgs.Bigraph> publisher1 =
                 connectedNode.newPublisher("bigraph", big_actor_msgs.Bigraph._TYPE);
 
-        final Publisher<String> publisher2 =
-                connectedNode.newPublisher("bgm", String._TYPE);
+        final Publisher<std_msgs.String> publisher2 =
+                connectedNode.newPublisher("bgm", std_msgs.String._TYPE);
 
 
         //Subscribers
@@ -114,80 +111,86 @@ public class BigraphHandle extends AbstractNodeMain {
                 mse.setTimeStamp(message.getTimeStamp());
                 log.info(message.getTasks());
             }
-        });
+	    });
 
-        Subscriber<String> subscriber2 = connectedNode.newSubscriber("brr", String._TYPE);
-        subscriber2.addMessageListener(new MessageListener<String>() {
+        Subscriber<std_msgs.String> subscriber2 = connectedNode.newSubscriber("brr", std_msgs.String._TYPE);
+        subscriber2.addMessageListener(new MessageListener<std_msgs.String>() {
             @Override
-            public void onNewMessage(String message) {
+            public void onNewMessage(std_msgs.String message) {
                 log.info("BRR received \n");
-                boolean taskCreated = false;
-                Task t = connectedNode.getTopicMessageFactory().newFromType(Task._TYPE);
-                try {
-                    BRR brr = null;
-                    try {
-                        log.info(message.getData());
-                        brr = new BRR(message.getData());
-                    } catch (RecognitionException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-                    edu.berkeley.eloi.bigraph.Bigraph redex = brr.getRedex();
-                    edu.berkeley.eloi.bigraph.Bigraph reactum = brr.getReactum();
+		String brr = (String)(message.getData());
+		log.info(brr);
+		BRR rule = null;
+		try {
+		    rule = new BRR(brr);
+		} catch (RecognitionException e0) {
+		    e0.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		} catch (IOException e1) {
+		    e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+		}
+		if(isMoveVehicleBRR(brr)){
+		    boolean taskCreated = false;
+		    Task t = connectedNode.getTopicMessageFactory().newFromType(Task._TYPE);
+		     edu.berkeley.eloi.bigraph.Bigraph redex = rule.getRedex();
+		     edu.berkeley.eloi.bigraph.Bigraph reactum = rule.getReactum();
 
-                    List<Node> vehicles = redex.getNodesWithControlID("Vehicle");
-                    if(vehicles.size() == 0) log.info("No vehicles to move");
-                    else if (vehicles.size() > 1) log.info("Rule attempt to move more than one vehicle.");
-                    else {
-                        Node vehicleNode = vehicles.get(0);
-                        Vehicle vehicle = getVehicleWithName(sse,vehicleNode.getId());
-                        if(vehicle == null) log.info("Vehicle does not exist or is not declared in the current structure estimation");
-                        else if(reactum.getNode(vehicleNode.getId()) == null) log.info("Vehicle not included in the reactum.");
-                        else {
-                            if(!reactum.getNode(vehicleNode.getId()).getParent().getClass().equals(Node.class)) log.info("Destination is not a node.");
-                            else {
-                                Node prnt = (Node) reactum.getNode(vehicleNode.getId()).getParent();
-                                if(prnt.getCtrId().equals("Location")) {
-                                    Location location = getLocationWithName(sse,prnt.getId());
-                                    if (location == null) log.info("Destination does not exist or is not declared in the current structure estimation");
-                                    else {
-                                        Point centroid = getLocationCentroid(location);
-                                        log.info("Create waypoint for vehicle " + vehicle.getName() + " at "+ centroid.getX() + ", " + centroid.getY());
-                                        t = createWPTask(vehicle,centroid.getX(),centroid.getY(),vehicle.getPosition().getAltitude(),t);
-                                        taskCreated = true;
-                                    }
-                                } else if (prnt.getCtrId().equals("Vehicle")) {
-                                    Vehicle destVehicle = getVehicleWithName(sse, prnt.getId());
-                                    if (destVehicle == null) log.info("Destination does not exist or is not declared in the current structure estimation");
-                                    else {
-                                        log.info("Create waypoint for vehicle " + vehicle.getName() + " at "+ destVehicle.getPosition().getLatitude() + ", " + destVehicle.getPosition().getLongitude());
-                                        t = createWPTask(vehicle,destVehicle.getPosition().getLatitude(),destVehicle.getPosition().getLongitude(),vehicle.getPosition().getAltitude(),t);
-                                        taskCreated = true;
-                                    }
-                                }
+		     List<Node> vehicles = redex.getNodesWithControlID("Vehicle");
+		     
+		     if(vehicles.size() == 0) log.info("No vehicles to move");
+		     else if (vehicles.size() > 1) log.info("Rule attempt to move more than one vehicle.");
+		     else {
+			 Node vehicleNode = vehicles.get(0);
+		         Vehicle vehicle = getVehicleWithName(sse,vehicleNode.getId());
+			 if(vehicle == null) log.info("Vehicle does not exist or is not declared in the current structure estimation");
+		         else if(reactum.getNode(vehicleNode.getId()) == null) log.info("Vehicle not included in the reactum.");
+			 else {
+			     if(!reactum.getNode(vehicleNode.getId()).getParent().getClass().equals(Node.class)) log.info("Destination is not a node.");
+			     else {
+				 Node prnt = (Node) reactum.getNode(vehicleNode.getId()).getParent();
+				 if(prnt.getCtrId().equals("Location")) {
+				     Location location = getLocationWithName(sse,prnt.getId());
+				     if (location == null) log.info("Destination does not exist or is not declared in the current structure estimation");
+				     else {
+					 Point centroid = getLocationCentroid(location);
+					 log.info("Create waypoint for vehicle " + vehicle.getName() + " at "+ centroid.getX() + ", " + centroid.getY());
+					 t = createWPTask(vehicle,centroid.getX(),centroid.getY(),vehicle.getPosition().getAltitude(),t);
+					 taskCreated = true;
+				     }
+				 } else if (prnt.getCtrId().equals("Vehicle")) {
+				     Vehicle destVehicle = getVehicleWithName(sse, prnt.getId());
+				     if (destVehicle == null) log.info("Destination does not exist or is not declared in the current structure estimation");
+				     else {
+					 log.info("Create waypoint for vehicle " + vehicle.getName() + " at "+ destVehicle.getPosition().getLatitude() + ", " + destVehicle.getPosition().getLongitude());
+					 t = createWPTask(vehicle,destVehicle.getPosition().getLatitude(),destVehicle.getPosition().getLongitude(),vehicle.getPosition().getAltitude(),t);
+					 taskCreated = true;
+				     }
+				 }
+			     }
+			 }
+		     }		    
+		     if(taskCreated){
+			 List<Task> tasks = mse.getTasks();
+			 tasks.add(t);
+			     
+			 //set new MSE fields
+			 mse.setTimeStamp(System.currentTimeMillis());
+			 mse.setSrcVehicleId(0);
+			 mse.setTasks(tasks);
+			 publisher0.publish(mse);
+		     }
+		}
+		else if(isHostingBRR(brr)){
+		    edu.berkeley.eloi.bigraph.Bigraph reactum = rule.getReactum();
+		    List<Node> bigactors = reactum.getNodesWithControlID("BA");
+		    List<Node> vehicles = reactum.getNodesWithControlID("Vehicle");
+		    log.info("Hosting bigActor "+bigactors.get(0)+" at vehicle "+vehicles.get(0));
+		}
+		else log.info("Unknown BRR");
+	    }       
+	    });
 
-
-                                if(taskCreated){
-                                    List<Task> tasks = mse.getTasks();
-                                    tasks.add(t);
-
-                                    //set new MSE fields
-                                    mse.setTimeStamp(System.currentTimeMillis());
-                                    mse.setSrcVehicleId(0);
-                                    mse.setTasks(tasks);
-                                    publisher0.publish(mse);
-                                }
-                            }
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-            }
-        });
 
         connectedNode.executeCancellableLoop(new CancellableLoop() {
-
-
             @Override
             protected void setup() {
                 bg.setBgm(term);
@@ -197,7 +200,7 @@ public class BigraphHandle extends AbstractNodeMain {
 
             @Override
             protected void loop() throws InterruptedException {
-                String str = publisher2.newMessage();
+                std_msgs.String str = publisher2.newMessage();
                 str.setData(term);
                 publisher2.publish(str);
                 publisher1.publish(bg);
@@ -205,6 +208,22 @@ public class BigraphHandle extends AbstractNodeMain {
             }
         });
     }
+
+    public static Boolean isMoveVehicleBRR(String brr){
+	String movePattern0 = "(\\w_Vehicle)||(\\w_Location|\\w_Vehicle)->(\\w_Vehicle).(\\w_Location|\\w_Vehicle)";
+	String movePattern1 = "(\\w_Vehicle)|(\\w_Location|\\w_Vehicle)->(\\w_Vehicle).(\\w_Location|\\w_Vehicle)";
+	if (brr.matches(movePattern0) || brr.matches(movePattern1)) 
+	    return true;
+	else return false;								      
+    }
+
+    public static Boolean isHostingBRR(String brr){
+	String hostingPattern0 = "(\\w_Vehicle)->(\\w_Vehicle).(\\w_BA)";
+	if (brr.matches(hostingPattern0)) 
+	    return true;
+	else return false;								      
+    }
+
 
     public static edu.berkeley.eloi.bigraph.Bigraph sse2bigraph(StructureStateEstimate sse){
         PlaceList places = new PlaceList();
@@ -214,13 +233,13 @@ public class BigraphHandle extends AbstractNodeMain {
         for (Location l : sse.getLocations()){
             Place prt = findLocationParent(l,sse,rg0);
             //System.out.println("Parent of " + l.getName() + ": "+ prt);
-            places.add(new Node(l.getName(),"Location",new ArrayList<java.lang.String>(),prt));
+            places.add(new Node(l.getName(),"Location",new ArrayList<String>(),prt));
 
         }
         for (Vehicle v : sse.getVehicles()){
             Place prt = findVehicleParent(v, sse, rg0);
             List<Network> networks = v.getNetworks();
-            List<java.lang.String> names0 = new ArrayList<java.lang.String>();
+            List<String> names0 = new ArrayList<String>();
             for (Network n: networks){
                 if (n.getType() == Network.NT_ETHERNET_10M
                         || n.getType() == Network.NT_ETHERNET_100M
@@ -252,8 +271,8 @@ public class BigraphHandle extends AbstractNodeMain {
         return bg;
     }
 
-    private static List<java.lang.String> sse2signature(StructureStateEstimate sse){
-        List<java.lang.String> signature = new ArrayList<java.lang.String>();
+    private static List<String> sse2signature(StructureStateEstimate sse){
+        List<String> signature = new ArrayList<String>();
 
         for (Location l: sse.getLocations()){
             signature.add(l.getName()+"_Location");
@@ -265,8 +284,8 @@ public class BigraphHandle extends AbstractNodeMain {
         return signature;
     }
 
-    private static List<java.lang.String> sse2names(StructureStateEstimate sse){
-        List<java.lang.String> names = new ArrayList<java.lang.String>();
+    private static List<String> sse2names(StructureStateEstimate sse){
+        List<String> names = new ArrayList<String>();
         for (Network n: sse.getNetworks()){
             if (n.getType() == Network.NT_ETHERNET_10M
                     || n.getType() == Network.NT_ETHERNET_100M

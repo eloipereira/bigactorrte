@@ -2,8 +2,6 @@ package com.github.bigactor_pkg.bigraph_manager;
 
 import big_actor_msgs.*;
 import big_actor_msgs.Location;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import edu.berkeley.eloi.bigraph.*;
 import org.antlr.runtime.RecognitionException;
 import org.apache.commons.logging.Log;
@@ -15,6 +13,8 @@ import org.ros.node.ConnectedNode;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
 import java.lang.String;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class BigraphHandle extends AbstractNodeMain {
     private String term = "";
+    private String termWithHosting ="";
     private List<String> signature = new ArrayList<String>();
     private List<String> names = new ArrayList<String>();
     private edu.berkeley.eloi.bigraph.Bigraph bigraph = new edu.berkeley.eloi.bigraph.Bigraph();
@@ -70,6 +71,9 @@ public class BigraphHandle extends AbstractNodeMain {
 	final Publisher<StructureStateEstimate> publisher3 =
                 connectedNode.newPublisher("sse_external", StructureStateEstimate._TYPE);
 
+	final Publisher<std_msgs.String> publisher4 =
+                connectedNode.newPublisher("bgmWithHosting", std_msgs.String._TYPE);
+	
  
         //Subscribers
         Subscriber<StructureStateEstimate> subscriber0 = connectedNode.newSubscriber("sse", StructureStateEstimate._TYPE);
@@ -84,8 +88,10 @@ public class BigraphHandle extends AbstractNodeMain {
                 sse.setSrcVehicleId(message.getSrcVehicleId());
                 sse.setTimeStamp(message.getTimeStamp());
                 sse.setVehicles(message.getVehicles());
-                term = sse2bigraph(message).getTerm();
-
+		
+		BigraphAbstraction bigraphAbstr = new BigraphAbstraction(message);
+                term = bigraphAbstr.getPhysicalAbstraction().getTerm();
+		termWithHosting = bigraphAbstr.getPhysicalAndHostingAbstraction().getTerm();
                 try {
                     bigraph = new edu.berkeley.eloi.bigraph.Bigraph(term+";");
                 } catch (IOException e) {
@@ -95,8 +101,9 @@ public class BigraphHandle extends AbstractNodeMain {
                 }
 
                 log.info("Bigraph term: "+ term);
-                signature = sse2signature(message);
-                names = sse2names(message);
+		log.info("Bigraph term with hosting: "+termWithHosting);
+                signature=bigraphAbstr.getSignature();
+                names = bigraphAbstr.getNames();
 
                 bg.setBgm(term);
                 bg.setNames(names);
@@ -190,8 +197,10 @@ public class BigraphHandle extends AbstractNodeMain {
 		    Hosting h = connectedNode.getTopicMessageFactory().newFromType(Hosting._TYPE);
 		    h.setBigActorID(bigactor.getId());
 		    h.setVehicleName(vehicle.getId()); 
+		    h.setTimeStamp(System.currentTimeMillis());
 		    List<Hosting> hostings = sse.getHostings();
 		    hostings.add(h);
+		    sse.setSrcVehicleId(srcVehicleId);
 		    sse.setHostings(hostings);
 		    sse.setTimeStamp(System.currentTimeMillis());
 		    publisher3.publish(sse);
@@ -214,6 +223,8 @@ public class BigraphHandle extends AbstractNodeMain {
                 std_msgs.String str = publisher2.newMessage();
                 str.setData(term);
                 publisher2.publish(str);
+		std_msgs.String str1 = publisher4.newMessage();
+		publisher4.publish(str1);
                 publisher1.publish(bg);
                 Thread.sleep(1000);
             }
@@ -241,184 +252,6 @@ public class BigraphHandle extends AbstractNodeMain {
 	if (brr.matches(hostingPattern0)) 
 	    return true;
 	else return false;								      
-    }
-
-
-    public static edu.berkeley.eloi.bigraph.Bigraph sse2bigraph(StructureStateEstimate sse){
-        PlaceList places = new PlaceList();
-        Region rg0 = new Region(0);
-        places.add(rg0);
-
-        for (Location l : sse.getLocations()){
-            Place prt = findLocationParent(l,sse,rg0);
-            //System.out.println("Parent of " + l.getName() + ": "+ prt);
-            places.add(new BigraphNode(l.getName(),"Location",new ArrayList<String>(),prt));
-
-        }
-        for (Vehicle v : sse.getVehicles()){
-            Place prt = findVehicleParent(v, sse, rg0);
-            List<Network> networks = v.getNetworks();
-            List<String> names0 = new ArrayList<String>();
-            for (Network n: networks){
-                if (n.getType() == Network.NT_ETHERNET_10M
-                        || n.getType() == Network.NT_ETHERNET_100M
-                        || n.getType() == Network.NT_ETHERNET_1G
-                        || n.getType() == Network.NT_ETHERNET_10G
-                        && ! names0.contains("ethernet"+n.getAddress())) names0.add("ethernet"+n.getAddress());
-                if (n.getType() == Network.NT_WIFI_2MB
-                        || n.getType() == Network.NT_WIFI_11MB
-                        || n.getType() == Network.NT_WIFI_27MB
-                        || n.getType() == Network.NT_WIFI_54MB
-                        || n.getType() == Network.NT_WIFI_600MB
-                        || n.getType() == Network.NT_WIFI_1300MB
-                        || n.getType() == Network.NT_WIFI_7000MB
-                        && ! names0.contains("wifi"+n.getAddress())) names0.add("wifi"+n.getAddress());
-                if (n.getType() == Network.NT_MESH_500kB && ! names0.contains("mesh"+n.getAddress())) names0.add("mesh"+n.getAddress());
-                if (n.getType() == Network.NT_ACOUSTIC_7kB
-                        || n.getType() == Network.NT_ACOUSTIC_9kB
-                        || n.getType() == Network.NT_ACOUSTIC_14kB
-                        || n.getType() == Network.NT_ACOUSTIC_31kB
-                        && ! names0.contains("acoustic"+n.getAddress())) names0.add("acoustic"+n.getAddress());
-                if (n.getType() == Network.NT_PICCOLO && ! names0.contains("piccolo"+n.getAddress())) names0.add("piccolo"+n.getAddress());
-                if (n.getType() == Network.NT_AIS && ! names0.contains("ais")) names0.add("ais");
-            }
-            places.add(new BigraphNode(v.getName(),"Vehicle", names0, prt));
-        }
-
-        edu.berkeley.eloi.bigraph.Bigraph bg = new edu.berkeley.eloi.bigraph.Bigraph(places);
-        //System.out.println(bg);
-        return bg;
-    }
-
-    private static List<String> sse2signature(StructureStateEstimate sse){
-        List<String> signature = new ArrayList<String>();
-
-        for (Location l: sse.getLocations()){
-            signature.add(l.getName()+"_Location");
-        }
-
-        for (Vehicle v: sse.getVehicles()){
-            signature.add(v.getName()+"_Vehicle");
-        }
-        return signature;
-    }
-
-    private static List<String> sse2names(StructureStateEstimate sse){
-        List<String> names = new ArrayList<String>();
-        for (Network n: sse.getNetworks()){
-            if (n.getType() == Network.NT_ETHERNET_10M
-                    || n.getType() == Network.NT_ETHERNET_100M
-                    || n.getType() == Network.NT_ETHERNET_1G
-                    || n.getType() == Network.NT_ETHERNET_10G
-                    && ! names.contains("ethernet"+n.getAddress())) names.add("ethernet"+n.getAddress());
-            if (n.getType() == Network.NT_WIFI_2MB
-                    || n.getType() == Network.NT_WIFI_11MB
-                    || n.getType() == Network.NT_WIFI_27MB
-                    || n.getType() == Network.NT_WIFI_54MB
-                    || n.getType() == Network.NT_WIFI_600MB
-                    || n.getType() == Network.NT_WIFI_1300MB
-                    || n.getType() == Network.NT_WIFI_7000MB
-                    && ! names.contains("wifi"+n.getAddress())) names.add("wifi"+n.getAddress());
-            if (n.getType() == Network.NT_MESH_500kB && ! names.contains("mesh"+n.getAddress())) names.add("mesh"+n.getAddress());
-            if (n.getType() == Network.NT_ACOUSTIC_7kB
-                    || n.getType() == Network.NT_ACOUSTIC_9kB
-                    || n.getType() == Network.NT_ACOUSTIC_14kB
-                    || n.getType() == Network.NT_ACOUSTIC_31kB
-                    && ! names.contains("acoustic"+n.getAddress())) names.add("acoustic"+n.getAddress());
-            if (n.getType() == Network.NT_PICCOLO && ! names.contains("piccolo"+n.getAddress())) names.add("piccolo"+n.getAddress());
-            if (n.getType() == Network.NT_AIS && ! names.contains("ais")) names.add("ais");
-        }
-        return names;
-    }
-
-    private static Place findLocationParent(Location loc, StructureStateEstimate sse, Region region){
-        Location container = findMinimumContainer(loc,sse.getLocations());
-        if (container.equals(loc)){
-            return region;
-        } else {
-            return new BigraphNode(container.getName(),"Location",new ArrayList<java.lang.String>(),region);
-        }
-
-    }
-
-    private static Place findVehicleParent(Vehicle v, StructureStateEstimate sse, Region region){
-        Place parent = null;
-
-        Coordinate vehCoord = new Coordinate(v.getPosition().getLatitude(), v.getPosition().getLongitude());
-        GeometryFactory gf = new GeometryFactory();
-        Point vehPoint = gf.createPoint(vehCoord);
-
-        for(Location l : sse.getLocations()){
-            List<LatLng> ll = l.getBoundaries();
-            List<Coordinate> points = new ArrayList<Coordinate>();
-            for(LatLng point : ll){
-                points.add(new Coordinate(point.getLatitude(), point.getLongitude()));
-            }
-
-            Polygon polygon = gf.createPolygon(new LinearRing(new CoordinateArraySequence(points
-                    .toArray(new Coordinate[points.size()])), gf), null);
-
-            if(vehPoint.within(polygon)){
-                parent = new BigraphNode(l.getName(),"Location",new ArrayList<java.lang.String>(),region);
-                //System.out.println("Found parent of " + v + ": " + parent);
-            }
-        }
-
-        if (parent == null){
-            parent = region;
-        }
-        return parent;
-    }
-
-    private static Location findMinimumContainer(Location loc, List<Location> locations){
-        Location minContainer  = loc;
-
-        GeometryFactory gf = new GeometryFactory();
-
-        List<LatLng> locVertices = loc.getBoundaries();
-        List<Coordinate> locCoord = new ArrayList<Coordinate>();
-        for(LatLng point : locVertices){
-            locCoord.add(new Coordinate(point.getLatitude(), point.getLongitude()));
-        }
-
-        Polygon locPolygon = gf.createPolygon(new LinearRing(new CoordinateArraySequence(locCoord
-                .toArray(new Coordinate[locCoord.size()])), gf), null);
-        locPolygon = (Polygon) locPolygon.convexHull();
-
-        Double minContainerArea = Double.MAX_VALUE;
-
-        Double maxIntersectionArea = 0.0;
-        Boolean foundContainer = false;
-
-        for(Location l_t : locations){
-            List<LatLng> ll = l_t.getBoundaries();
-            List<Coordinate> points = new ArrayList<Coordinate>();
-            for(LatLng point : ll){
-                points.add(new Coordinate(point.getLatitude(), point.getLongitude()));
-            }
-
-            Polygon polygon = gf.createPolygon(new LinearRing(new CoordinateArraySequence(points
-                    .toArray(new Coordinate[points.size()])), gf), null);
-
-            polygon = (Polygon) polygon.convexHull();
-
-
-            if(polygon.contains(locPolygon) && polygon.getArea() < minContainerArea && polygon.getArea() > locPolygon.getArea()){
-                minContainer=l_t;
-                minContainerArea = polygon.getArea();
-                foundContainer = true;
-            } else if(!foundContainer && locPolygon.overlaps(polygon))
-                if(locPolygon.intersection(polygon).getArea() > maxIntersectionArea) {
-                    maxIntersectionArea = locPolygon.intersection(polygon).getArea();
-                    if(maxIntersectionArea > 0.5 * locPolygon.getArea()){
-                        minContainer=l_t;
-                        //System.out.println("Found intersection of " + loc.getName() + " with " + l_t.getName());
-                    }
-                }
-
-        }
-        //System.out.println("Minimum container of "+ loc.getName() + ": "+ minContainer.getName());
-        return minContainer;
     }
 
     private Task createWPTask(Vehicle v, Double lat, Double lon, Double alt, Task t){

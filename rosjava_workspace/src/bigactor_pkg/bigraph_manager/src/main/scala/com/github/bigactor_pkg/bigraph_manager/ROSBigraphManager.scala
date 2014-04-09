@@ -13,7 +13,7 @@ import org.ros.concurrent.CancellableLoop
 import java.util
 import scala.collection.JavaConversions._
 import big_actor_msgs._
-import bigactors.{EXECUTE_BRR, BIGRAPH_REQUEST, BIGRAPH_RESPONSE}
+import bigactors.{BIGRAPH_WITH_HOST_REQUEST, EXECUTE_BRR, BIGRAPH_REQUEST, BIGRAPH_RESPONSE}
 import java.util.Properties
 import edu.berkeley.eloi.bigraph.{Control, BRR, Bigraph, BRS}
 import scala.collection.mutable.ArrayBuffer
@@ -26,6 +26,7 @@ import scala.actors.Actor._
 import scala.actors.remote._
 import scala.actors.remote.RemoteActor._
 
+
 class ROSBigraphManager extends AbstractNodeMain {
 
   override def getDefaultNodeName(): GraphName = {
@@ -35,9 +36,15 @@ class ROSBigraphManager extends AbstractNodeMain {
   override def onStart(connectedNode: ConnectedNode){
     var log = connectedNode.getLog
     var bigActorsLaunched = false
-    var brsDefined = false
-    var brs: BRS = new BRS(new util.ArrayList[Control](),new util.ArrayList[String](), new Bigraph(), new util.ArrayList[BRR](), false)
+    var bigraphDefined = false
+    var bigraphWithHostingDefined = false
     var brrQueue = ArrayBuffer[BRR]()
+    var bigraph = new edu.berkeley.eloi.bigraph.Bigraph
+    var bigraphWithHosting = new edu.berkeley.eloi.bigraph.Bigraph
+    var signature = new util.ArrayList[Control]()
+    var signatureWithHosting = new util.ArrayList[Control]()
+    var names = new util.ArrayList[String]()
+
 
     def enqueueBRR(brr: BRR){
       brrQueue += brr
@@ -49,12 +56,19 @@ class ROSBigraphManager extends AbstractNodeMain {
       brr
     }
 
-    def getBRS: BRS = brs
+    def getBigraph: Bigraph = bigraph
 
-    def setBRS(new_brs: BRS){
-      brs = new_brs
+    def getBigraphWithHosting: Bigraph = bigraphWithHosting
+
+
+    def setBigraph(b: Bigraph) {
+      bigraph = b
     }
 
+    def setBigraphWithHosting(b: Bigraph) {
+      bigraphWithHosting = b
+    }
+    
     val bigraph_manager = actor {
         val prop = new Properties
         prop.load(new FileInputStream("ROSBigraphManager.properties"))
@@ -74,7 +88,11 @@ class ROSBigraphManager extends AbstractNodeMain {
             }
             case BIGRAPH_REQUEST => {
               log.info("Sending bigraph to " + sender)
-              sender ! BIGRAPH_RESPONSE(brs.getBigraph)
+              sender ! BIGRAPH_RESPONSE(getBigraph)
+            }
+            case BIGRAPH_WITH_HOST_REQUEST => {
+              log.info("Sending bigraph with host to " + sender)
+              sender ! BIGRAPH_RESPONSE(getBigraphWithHosting)
             }
           }
         }
@@ -83,17 +101,35 @@ class ROSBigraphManager extends AbstractNodeMain {
     var subscriber0: Subscriber[big_actor_msgs.Bigraph] = connectedNode.newSubscriber("bigraph",big_actor_msgs.Bigraph._TYPE)
     subscriber0.addMessageListener(new MessageListener[big_actor_msgs.Bigraph]() {
       override def onNewMessage(message: big_actor_msgs.Bigraph) {
-        var signature = new util.ArrayList[Control]()
+        
         for(t <- message.getSignature){
           signature.add(new Control(t,1,new Control.Active)) //TODO - assuming arity 1 is wrong. Need to be fixed.
         }
         log.info("New bigraph term: " + message.getBgm)
         log.info("New signature: " + message.getSignature)
         log.info("New link names: " + message.getNames)
-        setBRS(new BRS(signature , message.getNames, new Bigraph(message.getBgm +";"), new util.ArrayList[BRR](), false))
-        brsDefined = true
+        setBigraph(new Bigraph(message.getBgm +";"))
+        names.addAll(message.getNames)
+        bigraphDefined = true
       }
     });
+
+    var subscriber1: Subscriber[big_actor_msgs.Bigraph] = connectedNode.newSubscriber("bigraphWithHosting",big_actor_msgs.Bigraph._TYPE)
+    subscriber1.addMessageListener(new MessageListener[big_actor_msgs.Bigraph]() {
+      override def onNewMessage(message: big_actor_msgs.Bigraph) {
+        
+        for(t <- message.getSignature){
+          signatureWithHosting.add(new Control(t,1,new Control.Active)) //TODO - assuming arity 1 is wrong. Need to be fixed.
+        }
+        log.info("New bigraph term with hosting: " + message.getBgm)
+        log.info("New signature with hosting: " + message.getSignature)
+        log.info("New link names: " + message.getNames)
+        setBigraphWithHosting(new Bigraph(message.getBgm +";"))
+        names.addAll(message.getNames)
+        bigraphWithHostingDefined = true
+      }
+    });
+
     var publisher: Publisher[std_msgs.String] = connectedNode.newPublisher("brr", std_msgs.String._TYPE)
 
     connectedNode.executeCancellableLoop(new CancellableLoop() {
@@ -103,7 +139,6 @@ class ROSBigraphManager extends AbstractNodeMain {
           var brrString = publisher.newMessage()
           brrString.setData(dequeueBRR.toString)
           publisher.publish(brrString)
-         // BigraphHandler.brrQueue.trimStart(1)
         }
         Thread.sleep(1000)
       }

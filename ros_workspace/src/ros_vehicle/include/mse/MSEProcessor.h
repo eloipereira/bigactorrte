@@ -85,9 +85,11 @@ private:
 
   //! this processor is associated to a vehicle
   uint64_t vehicle_id_;
+  uint64_t vehicle_ttl_;
   std::string vehicle_name_;
   uint8_t vehicle_type_;
   uint64_t ground_station_id_;
+  uint64_t ground_station_ttl_;
   uint8_t ground_station_net_;
   uint8_t ground_station_channel_;
   float ground_station_latitude_;

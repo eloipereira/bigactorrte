@@ -89,12 +89,18 @@ MSEProcessor::createGroundStationVehicle()
   if (this->getHandle().hasParam("/gs_id"))
   {
     big_actor_msgs::Network net;
+
     net.type = ground_station_net_;
     net.address = ground_station_channel_;
     net.mask = 0;
     net.timeStamp = Clock::getTimeStamp();
     vehicles_[ground_station_id_].timeStamp = Clock::getTimeStamp();
     vehicles_[ground_station_id_].vehicleId = ground_station_id_;
+    vehicles_[ground_station_id_].vehicle_ttl = ground_station_ttl_;
+    
+    // ROS_INFO("GS ttl: %llu", ground_station_channel_);
+    // ROS_INFO("GS ttl: %llu", vehicles_[ground_station_id_].vehicle_ttl);
+    
     vehicles_[ground_station_id_].vehicleType =
         big_actor_msgs::Vehicle::VT_GROUND_STATION;
     vehicles_[ground_station_id_].networks.push_back(net);
@@ -126,6 +132,13 @@ MSEProcessor::setupParameters()
     ground_station_channel_ = v;
   }
 
+  v = 0;
+  if (!this->readParam("/vehicle_ttl", v, v))
+  {
+    throw ROSVehicleException("Vehicle ttl Parameter Missing");
+  }
+  vehicle_ttl_ = v;
+
   int type = big_actor_msgs::Vehicle::VT_NONE;
   this->readParam("/vehicle_type", type, type);
   vehicle_type_ = type;
@@ -136,6 +149,9 @@ MSEProcessor::setupParameters()
     generateNameFromID(type, v, s);
   }
   vehicle_name_ = s;
+
+  
+
   //! Load static networks
   v = 0;
   if (this->readParam("/net_num", v, v))
@@ -162,6 +178,13 @@ MSEProcessor::setupParameters()
     this->readParam("/gs_id", v, v);
     ground_station_id_ = v;
 
+    v = 0;
+    if (!this->readParam("/gs_ttl", v, v))
+      {
+	throw ROSVehicleException("Ground station ttl Parameter Missing");
+      }
+    ground_station_ttl_ = v;
+
     double d = 0.0;
     this->readParam("/gs_lat", d, d);
     ground_station_latitude_ = d;
@@ -186,7 +209,26 @@ void
 MSEProcessor::publishSSE()
 {
   big_actor_msgs::StructureStateEstimate sse;
+  std::vector<uint64_t> deadVehicles;  
+  for (VehiclesMap_t::iterator it = vehicles_.begin(); it != vehicles_.end(); ++it){
+    if(vehicles_[it->second.vehicleId].vehicle_ttl != 0){
+      uint64_t ts=Clock::getTimeStamp();
+      uint64_t elapsed = ts - vehicles_[it->first].timeStamp;
+      //std::cout << "Time at MSE Proc " << ts << " and elapse is " << elapsed << std::endl;
+      //ROS_INFO("Vehicle ttl is: %llu", vehicles_[it->first].vehicle_ttl);
+      if(vehicles_[it->first].vehicle_ttl < elapsed){
+        ROS_INFO("Vehicle %d died. Removing from SSE.", it->first);
+	deadVehicles.push_back(it->first);
+      }
+    }
+  }
 
+  for (std::vector<uint64_t>::iterator it = deadVehicles.begin(); it != deadVehicles.end(); ++it){
+    this->vehicles_.erase(*it);
+  }
+
+  deadVehicles.clear();
+  
   sse.srcVehicleId = this->vehicle_id_;
   sse.timeStamp = Clock::getTimeStamp();
   for (VehiclesMap_t::iterator it = this->vehicles_.begin();
@@ -206,7 +248,6 @@ MSEProcessor::publishSSE()
   {
     sse.hostings.push_back(it->second);
   }
-
   this->sse_publisher_.publish(sse);
   this->internal_sse_publisher_.publish(sse);
 }
@@ -272,6 +313,10 @@ MSEProcessor::updateVehicles(
       }
     }
   }
+
+
+  //maybe remove old vehicles here?!
+
 }
 
 void
@@ -410,7 +455,7 @@ void
 MSEProcessor::mseCallback(
     const big_actor_msgs::MissionStateEstimate::ConstPtr& msg)
 {
-  ROS_INFO("Got new MSE from %d...", (int )msg->srcVehicleId);
+  // ROS_INFO("Got new MSE from %d...", (int )msg->srcVehicleId);
   if (msg->srcVehicleId == this->vehicle_id_)
   {
 
@@ -426,7 +471,7 @@ MSEProcessor::mseCallback(
   }
   if (isFresh(msg->srcVehicleId, msg->timeStamp))
   {
-    ROS_INFO("...and it is fresh. Let me update tasks!");
+    // ROS_INFO("...and it is fresh. Let me update tasks!");
     //! update the stamp and process MSE
     this->vehicles_stamps_[msg->srcVehicleId] = msg->timeStamp;
     updateTasks(msg);
@@ -481,7 +526,7 @@ MSEProcessor::assignTaskCallback(ros_vehicle_msgs::AssignTask::Request& req,
   if (item == this->tasks_.end())
   {
     std::stringstream ss;
-    ss << "Unknowned task Id: " << req.task;
+    ss << "Unknown task Id: " << req.task;
 
     result.ok = false;
     result.error = ss.str();
@@ -680,6 +725,7 @@ MSEProcessor::vehicleStateCallback(
   if (msg->vehicleId == this->vehicle_id_)
   {
     getMyVehicleInfo().name = this->vehicle_name_;
+    getMyVehicleInfo().vehicle_ttl = this->vehicle_ttl_;
     getMyVehicleInfo().vehicleId = this->vehicle_id_;
     getMyVehicleInfo().vehicleType = this->vehicle_type_;
 

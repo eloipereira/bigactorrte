@@ -1,4 +1,5 @@
 uint64 timeStamp              # Last update timestamp in milliseconds since the Epoch (1970-01-01 00:00:00.000 UTC).
+uint64 location_ttl           #	Time-to-live. If message is not updated, it is removed from sse
 uint32 locationId             # Unique location id
 LatLng[] boundaries           # Location vertices (polygon)
 float32 minimumAltitude       # Lower altitude bound of the location

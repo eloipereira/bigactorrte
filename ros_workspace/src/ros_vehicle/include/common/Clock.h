@@ -9,6 +9,8 @@
 #define CLOCK_H_
 #include <ctime>
 #include <stdint.h>
+#include <iostream>
+
 class Clock
 {
 public:
@@ -21,6 +23,7 @@ public:
     gettimeofday(&tv, NULL);
     uint64_t t = tv.tv_sec * (uint64_t)1000000 + tv.tv_usec;
     t /= 1000;
+
     return t;
     //return time(0) * 1000;
   }

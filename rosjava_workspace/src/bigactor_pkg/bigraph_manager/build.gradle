@@ -30,6 +30,13 @@ apply plugin: 'eclipse'
  which usually occur on minor and major version numbers.
 */
 
+repositories{
+  maven{
+    url "https://bitbucket.org/eloipereira/maven-repo-releases/raw/master"
+  }
+}
+
+
 dependencies {
   /* An external maven artifact dependency */
   compile 'org.ros.rosjava_core:rosjava:[0.1,)'
@@ -39,14 +46,22 @@ dependencies {
   /* compile project(':sibling_gradle_project') */
 
   compile project(':big_actor_msgs')
-  compile files('./libs/antlr-3.4-complete.jar','./libs/Bgm2Java.jar','./libs/BigraphVisualizer.jar','./libs/jts-1.13.jar','./libs/bigactors_2.10-1.0.jar')
+  //compile files('./libs/antlr-3.4-complete.jar','./libs/Bgm2Java.jar','./libs/BigraphVisualizer.jar','./libs/jts-1.13.jar','./libs/bigactors_2.10-1.0.jar')
+  
+  compile files('./libs/jts-1.13.jar')
+
+  compile 'bgm2java:bgm2java:1.0'
+
+  compile 'bigraphvisualizer:bigraphvisualizer:1.0'
+
+  compile 'bigactors:bigactors:1.0'
   
   // Libraries needed to run the scala tools
-  scalaTools 'org.scala-lang:scala-compiler:2.10.0'
-  scalaTools 'org.scala-lang:scala-library:2.10.0'
+  scalaTools 'org.scala-lang:scala-compiler:2.11.0-RC3'
+  scalaTools 'org.scala-lang:scala-library:2.11.0-RC3'
 
   // Libraries needed for scala api
-  compile 'org.scala-lang:scala-library:2.10.0'
+  compile 'org.scala-lang:scala-library:2.11.0-RC3'
 
 }
 

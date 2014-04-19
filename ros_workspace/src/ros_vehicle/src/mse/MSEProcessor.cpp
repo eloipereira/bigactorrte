@@ -214,7 +214,7 @@ MSEProcessor::publishSSE()
     if(vehicles_[it->second.vehicleId].vehicle_ttl != 0){
       uint64_t ts=Clock::getTimeStamp();
       uint64_t elapsed = ts - vehicles_[it->first].timeStamp;
-      //std::cout << "Time at MSE Proc " << ts << " and elapse is " << elapsed << std::endl;
+      std::cout << "Time at MSE Proc " << ts << " and elapse is " << elapsed << std::endl;
       //ROS_INFO("Vehicle ttl is: %llu", vehicles_[it->first].vehicle_ttl);
       if(vehicles_[it->first].vehicle_ttl < elapsed){
         ROS_INFO("Vehicle %d died. Removing from SSE.", it->first);

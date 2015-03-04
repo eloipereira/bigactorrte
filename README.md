@@ -23,6 +23,8 @@ the Robot Operating System.
 
 * Clone the repository
 
+* If your machine is 32 bit set the flag CPU32 to 1 in "BigActorRTE/ros_workspace/src/piccolo_ros/CMakeLists.txt"
+
 * cd ~/bigactorrte/ros_workspace/src
 
 * catkin_init_workspace

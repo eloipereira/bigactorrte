@@ -4,7 +4,7 @@ project(piccolo_ros)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-set(CPU32 1)
+set(CPU32 0)
 
 find_package(catkin REQUIRED COMPONENTS message_generation roscpp rospy std_msgs)
 # make sure configure headers are build before node using them

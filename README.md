@@ -31,7 +31,7 @@ the Robot Operating System.
 
 * cd ..
 
-* catkin_make
+* catkin_make -j1
 
 * source devel/setup.bash
 

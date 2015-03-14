@@ -19,7 +19,7 @@
 
 	<node name="piccolo_driver_1" pkg="piccolo_ros" type="piccolo_driver"
 		output="screen">
-		<param name="host" type="str" value="62.28.239.26" />
+		<param name="host" type="str" value="62.28.239.27" />
 		<param name="port" type="str" value="2001" />
 	</node>
 	<node name="autopilot_interface_node_1" pkg="ros_vehicle"

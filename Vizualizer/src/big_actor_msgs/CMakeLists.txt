@@ -32,6 +32,7 @@ add_message_files(
 	Task.msg
 	Vehicle.msg
 	Hosting.msg
+	Bigraph.msg
 )
 
 ## Generate services in the 'srv' folder

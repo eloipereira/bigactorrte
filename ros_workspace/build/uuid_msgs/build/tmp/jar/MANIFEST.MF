@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Export-Package: uuid_msgs;version="1.0.4";uses:="org.jboss.netty.buffe
+ r,org.ros.internal.message"
+Bundle-Version: 1.0.4
+Tool: Bnd-2.1.0.20130426-122213
+Bundle-Name: uuid_msgs
+Bnd-LastModified: 1426247019000
+Created-By: 1.7.0_75 (Oracle Corporation)
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.ros.rosjava_messages.uuid_msgs
+Import-Package: org.jboss.netty.buffer;version="[3.5,4)",org.ros.inter
+ nal.message
+

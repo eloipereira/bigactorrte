@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Export-Package: ros_vehicle_msgs;version="0.0.0";uses:="big_actor_msgs
+ ,org.jboss.netty.buffer,org.ros.internal.message,std_msgs"
+Bundle-Version: 0.0.0
+Tool: Bnd-2.1.0.20130426-122213
+Bundle-Name: ros_vehicle_msgs
+Bnd-LastModified: 1426258724000
+Created-By: 1.7.0_75 (Oracle Corporation)
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.ros.rosjava_messages.ros_vehicle_msgs
+Import-Package: big_actor_msgs;version="[0.0,1)",org.jboss.netty.buffe
+ r;version="[3.5,4)",org.ros.internal.message,std_msgs;version="[0.5,1
+ )"
+

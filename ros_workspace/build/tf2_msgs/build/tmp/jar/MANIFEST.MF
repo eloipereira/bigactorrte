@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Export-Package: tf2_msgs;version="0.5.7";uses:="actionlib_msgs,geometr
+ y_msgs,org.ros.internal.message,org.ros.message,std_msgs"
+Bundle-Version: 0.5.7
+Tool: Bnd-2.1.0.20130426-122213
+Bundle-Name: tf2_msgs
+Bnd-LastModified: 1426247010000
+Created-By: 1.7.0_75 (Oracle Corporation)
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.ros.rosjava_messages.tf2_msgs
+Import-Package: actionlib_msgs;version="[1.11,2)",geometry_msgs;versio
+ n="[1.11,2)",org.ros.internal.message,org.ros.message,std_msgs;versio
+ n="[0.5,1)"
+

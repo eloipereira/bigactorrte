@@ -1,0 +1,25 @@
+(cl:defpackage ros_vehicle_msgs-msg
+  (:use )
+  (:export
+   "<WAYPOINT>"
+   "WAYPOINT"
+   "<WAYPOINTLIST>"
+   "WAYPOINTLIST"
+   "<GOTOCOMMAND>"
+   "GOTOCOMMAND"
+   "<TASKSTATE>"
+   "TASKSTATE"
+   "<TRACKSTATUS>"
+   "TRACKSTATUS"
+   "<GATEWAYDATA>"
+   "GATEWAYDATA"
+   "<LOITERDATA>"
+   "LOITERDATA"
+   "<SERVICERETURNBOOL>"
+   "SERVICERETURNBOOL"
+   "<SEARCHCOMMAND>"
+   "SEARCHCOMMAND"
+   "<VEHICLESTATE>"
+   "VEHICLESTATE"
+  ))
+

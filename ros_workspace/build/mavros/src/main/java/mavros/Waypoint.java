@@ -1,0 +1,40 @@
+package mavros;
+
+public interface Waypoint extends org.ros.internal.message.Message {
+  static final java.lang.String _TYPE = "mavros/Waypoint";
+  static final java.lang.String _DEFINITION = "# Waypoint.msg\n#\n# ROS representation of MAVLink MISSION_ITEM\n# See mavlink documentation\n\n\n\n# see enum MAV_FRAME\nuint8 frame\nuint8 FRAME_GLOBAL = 0\nuint8 FRAME_LOCAL_NED = 1\nuint8 FRAME_MISSION = 2\nuint8 FRAME_GLOBAL_REL_ALT = 3\nuint8 FRAME_LOCAL_ENU = 4\n\n# see enum MAV_CMD\nuint16 command\nuint16 NAV_WAYPOINT = 16\nuint16 NAV_LOITER_UNLIM = 17\nuint16 NAV_LOITER_TURNS = 18\nuint16 NAV_LOITER_TIME = 19\nuint16 NAV_RETURN_TO_LAUNCH = 20\nuint16 NAV_LAND = 21\nuint16 NAV_TAKEOFF = 22\n# TODO: ROI mode\n\nbool is_current\nbool autocontinue\n# meaning of this params described in enum MAV_CMD\nfloat32 param1\nfloat32 param2\nfloat32 param3\nfloat32 param4\nfloat64 x_lat\nfloat64 y_long\nfloat64 z_alt\n";
+  static final byte FRAME_GLOBAL = 0;
+  static final byte FRAME_LOCAL_NED = 1;
+  static final byte FRAME_MISSION = 2;
+  static final byte FRAME_GLOBAL_REL_ALT = 3;
+  static final byte FRAME_LOCAL_ENU = 4;
+  static final short NAV_WAYPOINT = 16;
+  static final short NAV_LOITER_UNLIM = 17;
+  static final short NAV_LOITER_TURNS = 18;
+  static final short NAV_LOITER_TIME = 19;
+  static final short NAV_RETURN_TO_LAUNCH = 20;
+  static final short NAV_LAND = 21;
+  static final short NAV_TAKEOFF = 22;
+  byte getFrame();
+  void setFrame(byte value);
+  short getCommand();
+  void setCommand(short value);
+  boolean getIsCurrent();
+  void setIsCurrent(boolean value);
+  boolean getAutocontinue();
+  void setAutocontinue(boolean value);
+  float getParam1();
+  void setParam1(float value);
+  float getParam2();
+  void setParam2(float value);
+  float getParam3();
+  void setParam3(float value);
+  float getParam4();
+  void setParam4(float value);
+  double getXLat();
+  void setXLat(double value);
+  double getYLong();
+  void setYLong(double value);
+  double getZAlt();
+  void setZAlt(double value);
+}

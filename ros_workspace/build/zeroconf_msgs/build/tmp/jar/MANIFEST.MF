@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Export-Package: zeroconf_msgs;version="0.2.1";uses:="org.ros.internal.
+ message"
+Bundle-Version: 0.2.1
+Tool: Bnd-2.1.0.20130426-122213
+Bundle-Name: zeroconf_msgs
+Bnd-LastModified: 1426247114000
+Created-By: 1.7.0_75 (Oracle Corporation)
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.ros.rosjava_messages.zeroconf_msgs
+Import-Package: org.ros.internal.message
+

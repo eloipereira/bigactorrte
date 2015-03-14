@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Export-Package: piccolo_ros;version="0.0.0";uses:="org.jboss.netty.buf
+ fer,org.ros.internal.message,std_msgs"
+Bundle-Version: 0.0.0
+Tool: Bnd-2.1.0.20130426-122213
+Bundle-Name: piccolo_ros
+Bnd-LastModified: 1426288592000
+Created-By: 1.7.0_75 (Oracle Corporation)
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: org.ros.rosjava_messages.piccolo_ros
+Import-Package: org.jboss.netty.buffer;version="[3.5,4)",org.ros.inter
+ nal.message,std_msgs;version="[0.5,1)"
+

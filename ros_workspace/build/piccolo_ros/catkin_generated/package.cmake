@@ -1,0 +1,7 @@
+set(_CATKIN_CURRENT_PACKAGE "piccolo_ros")
+set(piccolo_ros_MAINTAINER "posilva <posilva@todo.todo>")
+set(piccolo_ros_DEPRECATED "")
+set(piccolo_ros_VERSION "0.0.0")
+set(piccolo_ros_BUILD_DEPENDS "roscpp" "rospy" "std_msgs" "message_generation")
+set(piccolo_ros_RUN_DEPENDS "roscpp" "rospy" "std_msgs" "message_runtime" "message_generation")
+set(piccolo_ros_BUILDTOOL_DEPENDS "catkin")

@@ -51,7 +51,8 @@
 		<param name="ais_vehicle_type" type="int" value="3" />
 	</node>
 
+	
+	<node name="load_locations" pkg="mission_manager" type="task_publisher_node" output="screen">
+	     <param name="locations_file" type="str" value="locations.xml"/>
+	</node>
 </launch>
-
-
-

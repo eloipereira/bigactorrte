@@ -1,2 +1,2 @@
-big_actor_msgs:piccolo_ros:ros_vehicle:ros_vehicle_msgs
+big_actor_msgs:mission_manager:piccolo_ros:ros_vehicle:ros_vehicle_msgs
 -DCATKIN_DEVEL_PREFIX=/home/eloi/bigactorrte/ros_workspace/devel -DCMAKE_INSTALL_PREFIX=/home/eloi/bigactorrte/ros_workspace/install -G Unix Makefiles

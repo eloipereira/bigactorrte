@@ -4,7 +4,7 @@
 		module="bigraphdriver"
 		revision="0.1-SNAPSHOT"
 		status="integration"
-		publication="20150313164313"
+		publication="20150313185814"
 	>
 		<description>
 		BigraphDriver
@@ -42,5 +42,6 @@
 		<dependency org="commons-logging" name="commons-logging" rev="1.2" conf="compile->default(compile)"/>
 		<dependency org="log4j" name="log4j" rev="1.2.17" conf="compile->default(compile)"/>
 		<dependency org="com.vividsolutions" name="jts" rev="1.13" conf="compile->default(compile)"/>
+		<dependency org="com.typesafe" name="config" rev="1.2.1" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>

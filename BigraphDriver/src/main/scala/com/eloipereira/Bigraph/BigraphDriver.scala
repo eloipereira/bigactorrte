@@ -2,6 +2,7 @@ package com.eloipereira.Bigraph
 
 import big_actor_msgs._
 import org.apache.commons.logging.Log
+import com.typesafe.config.ConfigFactory
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable._
@@ -18,8 +19,10 @@ import com.vividsolutions.jts.geom.impl.CoordinateArraySequence
 
 object BigraphDriver extends App{
 
-	val host = "localhost"
-	val port = 11311
+	val conf = ConfigFactory.load()
+	conf.checkValid(ConfigFactory.defaultReference(), "ros")
+	val uri = conf.getString("ros.ros_master_uri")
+
 
 	var term: String = ""
 	var termWithHosting: String =""
@@ -37,11 +40,11 @@ object BigraphDriver extends App{
 			val bgWithHosting: Bigraph = connectedNode.getTopicMessageFactory().newFromType(Bigraph._TYPE)
 
 			// Publishers
-		
-		val publisher1: Publisher[Bigraph] = connectedNode.newPublisher("bigraph", Bigraph._TYPE)
-		val publisher2: Publisher[std_msgs.String] = connectedNode.newPublisher("bgm", std_msgs.String._TYPE)
-		val publisher4: Publisher[std_msgs.String] = connectedNode.newPublisher("bgmWithHosting", std_msgs.String._TYPE)
-		val publisher5: Publisher[Bigraph] = connectedNode.newPublisher("bigraphWithHosting", big_actor_msgs.Bigraph._TYPE)
+
+			val publisher1: Publisher[Bigraph] = connectedNode.newPublisher("bigraph", Bigraph._TYPE)
+			val publisher2: Publisher[std_msgs.String] = connectedNode.newPublisher("bgm", std_msgs.String._TYPE)
+			val publisher4: Publisher[std_msgs.String] = connectedNode.newPublisher("bgmWithHosting", std_msgs.String._TYPE)
+			val publisher5: Publisher[Bigraph] = connectedNode.newPublisher("bigraphWithHosting", big_actor_msgs.Bigraph._TYPE)
 
 
 			val subscriber: Subscriber[big_actor_msgs.StructureStateEstimate] = connectedNode.newSubscriber("sse", StructureStateEstimate._TYPE)
@@ -73,17 +76,17 @@ object BigraphDriver extends App{
 				})
 
 connectedNode.executeCancellableLoop(new CancellableLoop {
-        override def loop(): Unit = {
-        	val str: std_msgs.String = publisher2.newMessage()
-			str.setData(term)
-			publisher2.publish(str)
-		 	val str1: std_msgs.String = publisher4.newMessage()
-			publisher4.publish(str1)
-			publisher1.publish(bg)
-			publisher5.publish(bgWithHosting)
-			Thread.sleep(1000)
-        }
-      })
+	override def loop(): Unit = {
+		val str: std_msgs.String = publisher2.newMessage()
+		str.setData(term)
+		publisher2.publish(str)
+		val str1: std_msgs.String = publisher4.newMessage()
+		publisher4.publish(str1)
+		publisher1.publish(bg)
+		publisher5.publish(bgWithHosting)
+		Thread.sleep(1000)
+	}
+	})
 super.onStart(connectedNode)
 }
 }
@@ -91,7 +94,7 @@ super.onStart(connectedNode)
 val executor: NodeMainExecutor = DefaultNodeMainExecutor.newDefault
 executor.execute(node, setupConfiguration)
 def getMasterUri: URI  = {
-	try new URI("http", null, host,port, "/", null, null)
+	try new URI(uri)
 	catch {
 		case e : URISyntaxException => null
 	}

@@ -128,6 +128,7 @@ IF(NOT CMAKE_INSTALL_LOCAL_ONLY)
   INCLUDE("/home/eloi/bigactorrte/ros_workspace/build/big_actor_msgs/cmake_install.cmake")
   INCLUDE("/home/eloi/bigactorrte/ros_workspace/build/piccolo_ros/cmake_install.cmake")
   INCLUDE("/home/eloi/bigactorrte/ros_workspace/build/ros_vehicle_msgs/cmake_install.cmake")
+  INCLUDE("/home/eloi/bigactorrte/ros_workspace/build/mission_manager/cmake_install.cmake")
   INCLUDE("/home/eloi/bigactorrte/ros_workspace/build/ros_vehicle/cmake_install.cmake")
 
 ENDIF(NOT CMAKE_INSTALL_LOCAL_ONLY)

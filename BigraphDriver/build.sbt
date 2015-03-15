@@ -32,6 +32,8 @@ libraryDependencies += "log4j" % "log4j" % "1.2.17"
 
 libraryDependencies += "com.vividsolutions" % "jts" % "1.13"
 
+libraryDependencies += "com.typesafe" % "config" % "1.2.1"
+
 publishTo <<= version { (v: String) =>
   if (v.trim.endsWith("SNAPSHOT"))
     Some(Resolver.file("file",  new File( Path.userHome.absolutePath+"/.m2/repository/snapshots" )) )

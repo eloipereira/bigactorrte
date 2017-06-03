@@ -1,2 +1,0 @@
-big_actor_msgs:bigactor_pkg
--DCATKIN_DEVEL_PREFIX=/home/eloi/bigactorrte/rosjava_workspace/devel -DCMAKE_INSTALL_PREFIX=/home/eloi/bigactorrte/rosjava_workspace/install -G Unix Makefiles

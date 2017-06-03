@@ -1,8 +1,0 @@
-prefix=/home/eloi/bigactorrte/ros_workspace/install
-
-Name: ros_vehicle
-Description: Description of ros_vehicle
-Version: 0.0.0
-Cflags: -I/home/eloi/bigactorrte/ros_workspace/install/include
-Libs: -L/home/eloi/bigactorrte/ros_workspace/install/lib 
-Requires: roscpp rospy big_actor_msgs piccolo_ros ros_vehicle_msgs

@@ -1,7 +1,0 @@
-set(_CATKIN_CURRENT_PACKAGE "ros_vehicle")
-set(ros_vehicle_MAINTAINER "posilva <posilva@todo.todo>")
-set(ros_vehicle_DEPRECATED "")
-set(ros_vehicle_VERSION "0.0.0")
-set(ros_vehicle_BUILD_DEPENDS "big_actor_msgs" "ros_vehicle_msgs" "piccolo_ros" "roscpp" "rospy" "roscpp" "rospy" "message_generation")
-set(ros_vehicle_RUN_DEPENDS "big_actor_msgs" "ros_vehicle_msgs" "piccolo_ros" "roscpp" "rospy" "message_runtime")
-set(ros_vehicle_BUILDTOOL_DEPENDS "catkin")
